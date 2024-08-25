@@ -11,7 +11,6 @@ export async function GET(
   try {
     const etag =
       req.headers.get("if-none-match")?.replace(/^"(.*)"$/, "$1") ?? undefined;
-    console.log(etag);
     const res = await data.get(`/image/${imageId}`, {
       onlyIf: {
         etagDoesNotMatch: etag,

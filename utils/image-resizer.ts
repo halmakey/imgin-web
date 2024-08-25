@@ -25,7 +25,6 @@ export function resizeImage(
         });
         return;
       }
-      console.log("Resizing image", image.width, image.height, scale);
 
       const targetWidth = Math.round(image.width * scale);
       const targetHeight = Math.round(image.height * scale);
@@ -42,21 +41,25 @@ export function resizeImage(
               height: targetHeight,
             });
           } else {
-            canvas.toBlob((blob) => {
-              if (blob) {
-                resolve({
-                  blob,
-                  width: targetWidth,
-                  height: targetHeight,
-                });
-              } else {
-                reject("Failed to convert image");
-              }
-            }, "image/png");
+            canvas.toBlob(
+              (blob) => {
+                if (blob) {
+                  resolve({
+                    blob,
+                    width: targetWidth,
+                    height: targetHeight,
+                  });
+                } else {
+                  reject("Failed to convert image");
+                }
+              },
+              "image/jpeg",
+              0.95,
+            );
           }
         },
         "image/webp",
-        0.9,
+        0.95,
       );
     };
     image.onerror = (e) => {
