@@ -3,7 +3,8 @@
     "next/core-web-vitals",
     "plugin:eslint-plugin-next-on-pages/recommended"
   ],
-  "plugins": [
-    "eslint-plugin-next-on-pages"
-  ]
+  "plugins": ["eslint-plugin-next-on-pages"],
+  "rules": {
+    "@next/next/no-img-element": "off"
+  }
 }
