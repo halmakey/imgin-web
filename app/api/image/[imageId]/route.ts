@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export const runtime = "edge";
@@ -24,7 +24,7 @@ export async function GET(
       const blob = await res.blob();
       return new Response(blob, {
         headers: {
-          "Content-Type": "image/png",
+          "Content-Type": blob.type,
           etag: res.httpEtag,
         },
       });
