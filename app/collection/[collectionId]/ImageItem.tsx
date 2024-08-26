@@ -48,7 +48,7 @@ export default function ImageItem({
       <div className="absolute bottom-0 left-0 right-0 top-0 text-xs opacity-0 hover:opacity-100">
         <button
           className="btn-icon absolute right-1 top-1 rounded-full bg-red-500 text-xs"
-          onClick={async (e) => {
+          onClick={(e) => {
             e.preventDefault();
             onDelete();
           }}

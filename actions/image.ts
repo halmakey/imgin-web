@@ -22,7 +22,7 @@ export async function addImage(
 
   const blob = formData.get("data") as Blob;
 
-  const id = nanoid();
+  const imageId = nanoid();
   const now = Date.now();
 
   await Promise.all([
@@ -30,14 +30,14 @@ export async function addImage(
       .prepare(
         "INSERT INTO collection_image (id, collection_id, image_index, width, height, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
       )
-      .bind(id, collectionId, index, width, height, now, now)
+      .bind(imageId, collectionId, index, width, height, now, now)
       .run(),
-    data.put("/image/" + id, blob, {
+    data.put(`collection/${collectionId}/image/${imageId}`, blob, {
       httpMetadata: { contentType: blob.type },
     }),
   ]);
 
-  return { id };
+  return { imageId };
 }
 
 export async function deleteImage(collectionId: string, imageId: string) {
@@ -60,7 +60,7 @@ export async function deleteImage(collectionId: string, imageId: string) {
           .bind(image.image_index - 1, image.id),
       ),
     ]),
-    data.delete("/image/" + imageId).catch((err) => {
+    data.delete(`collection/${collectionId}/image/${imageId}`).catch((err) => {
       console.warn(err);
     }),
   ]);
@@ -76,7 +76,7 @@ export async function clearCollectionImages(collectionId: string) {
     images.map(({ id }) =>
       Promise.all([
         db.prepare("DELETE FROM collection_image WHERE id = ?").bind(id).run(),
-        data.delete("/image/" + id).catch((err) => {
+        data.delete(`collection/${collectionId}/image/${id}`).catch((err) => {
           console.warn(err);
         }),
       ]),

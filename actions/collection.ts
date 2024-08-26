@@ -3,20 +3,19 @@
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import { nanoid } from "nanoid";
 import { redirect } from "next/navigation";
-import {
-  clearCollectionImages,
-} from "./image";
+import { clearCollectionImages } from "./image";
 
 export async function createCollection() {
   const db = getRequestContext().env.DB;
 
   const id = nanoid();
+  const exportId = nanoid();
   const now = Date.now();
   await db
     .prepare(
-      "INSERT INTO collection (id, created_at, updated_at) VALUES (?, ?, ?)",
+      "INSERT INTO collection (id, export_id, created_at, updated_at) VALUES (?, ?, ?, ?)",
     )
-    .bind(id, now, now)
+    .bind(id, exportId, now, now)
     .run();
 
   redirect(`/collection/${id}`);
@@ -34,16 +33,18 @@ export async function deleteCollection(collectionId: string) {
 export async function getCollection(collectionId: string) {
   const db = getRequestContext().env.DB;
   const result = await db
-    .prepare("SELECT id, updated_at FROM collection WHERE id = ?")
+    .prepare("SELECT id, export_id, updated_at FROM collection WHERE id = ?")
     .bind(collectionId)
-    .first<{ id: string; updated_at: number }>();
+    .first<{ id: string; export_id: string; updated_at: number }>();
   return result;
 }
 
 export async function listAllCollections() {
   const db = getRequestContext().env.DB;
   const result = await db
-    .prepare("SELECT id, updated_at FROM collection ORDER BY updated_at DESC")
+    .prepare(
+      "SELECT id, export_id, updated_at FROM collection ORDER BY updated_at DESC",
+    )
     .all<{ id: string; updated_at: number }>();
   return result.results;
 }
