@@ -2,8 +2,9 @@
 
 import { addImage, deleteImage } from "@/actions/image";
 import { resizeImage } from "@/utils/image-resizer";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import ImageItem from "./ImageItem";
+import { encodeVideo } from "@/utils/video-encoder";
 
 type InitialImageData = {
   id: string;
@@ -19,7 +20,8 @@ type ImageData = {
   height: number;
 };
 
-const MAX_SIZE = 2048;
+const IMAGE_SIZE = 1920;
+const VIDEO_SIZE = 1280;
 
 export default function ImageForm({
   collectionId,
@@ -39,6 +41,7 @@ export default function ImageForm({
     })),
   );
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(-1);
 
   return (
     <div className="flex flex-col gap-4">
@@ -69,7 +72,7 @@ export default function ImageForm({
             setBusy(true);
             for (let index = 0; index < files.length; index++) {
               const file = files[index];
-              const image = await resizeImage(file, MAX_SIZE);
+              const image = await resizeImage(file, IMAGE_SIZE);
               if (!image) {
                 continue;
               }
@@ -126,10 +129,41 @@ export default function ImageForm({
           />
         ))}
       </div>
-      <div>
-        <button type="button" className="btn-primary" disabled={busy}>
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          className="btn-primary"
+          disabled={busy}
+          hidden={images.length === 0}
+          onClick={async (e) => {
+            e.preventDefault();
+            try {
+              setBusy(true);
+              const srcs = images.map(({ url }) => url);
+              const result = await encodeVideo(srcs, VIDEO_SIZE, setProgress);
+              const a = document.createElement("a");
+              a.download = "video.webm";
+              a.href = URL.createObjectURL(result);
+              a.click();
+              URL.revokeObjectURL(a.href);
+              await fetch(`/collection/${collectionId}/video`)
+            } catch (err) {
+              alert("変換に失敗しました！ " + String(err));
+            } finally {
+              setBusy(false);
+              setProgress(-1);
+            }
+          }}
+        >
           変換する
         </button>
+        {progress >= 0 && (
+          <progress
+            max={1}
+            value={progress}
+            className="[&::-moz-progress-bar]:bg-green-500 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-bar]:bg-slate-300 [&::-webkit-progress-value]:rounded-lg [&::-webkit-progress-value]:bg-green-500"
+          />
+        )}
       </div>
     </div>
   );
