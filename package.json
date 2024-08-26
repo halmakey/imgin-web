@@ -9,10 +9,10 @@
     "lint": "next lint",
     "pages:build": "bunx @cloudflare/next-on-pages",
     "preview": "bun pages:build && wrangler pages dev",
-    "deploy": "bun pages:build && wrangler pages deploy",
+    "deploy": "bun pages:build && wrangler pages deploy --branch=production",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
     "migrate:local": "wrangler d1 migrations apply imgin-db --local",
-    "migrate:preview": "wrangler d1 migrations apply imgin-db --preview --remote"
+    "migrate:remote": "wrangler d1 migrations apply imgin-db --remote"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
