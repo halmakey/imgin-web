@@ -19,11 +19,10 @@ export async function GET(
     if (!res) {
       return new Response("Not Found", { status: 404 });
     }
-    if ("blob" in res) {
-      const blob = await res.blob();
-      return new Response(blob, {
+    if ("blob" in res) {   
+      return new Response(res.body, {
         headers: {
-          "Content-Type": blob.type,
+          "Content-Type": res.httpMetadata?.contentType || "application/octet-stream",
           etag: res.httpEtag,
         },
       });
