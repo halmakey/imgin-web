@@ -22,23 +22,21 @@ export function CollectionCard({
           {format(updatedAt, "yyyy-MM-dd HH:mm:ss", { locale: ja })}
         </button>
       </Link>
-      <div className="absolute bottom-0 left-0 right-0 top-0">
-        <button
-          type="button"
-          className="my-auto"
-          onClick={async (e) => {
-            e.preventDefault();
-            try {
-              await deleteCollection(collectionId);
-              router.refresh();
-            } catch (err) {
-              alert("コレクションの削除に失敗しました！ " + String(err));
-            }
-          }}
-        >
-          <TrashIcon className="size-4" />
-        </button>
-      </div>
+      <button
+        type="button"
+        className="absolute right-0"
+        onClick={async (e) => {
+          e.preventDefault();
+          try {
+            await deleteCollection(collectionId);
+            router.refresh();
+          } catch (err) {
+            alert("コレクションの削除に失敗しました！ " + String(err));
+          }
+        }}
+      >
+        <TrashIcon className="size-4" />
+      </button>
     </div>
   );
 }
