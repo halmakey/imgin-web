@@ -18,3 +18,9 @@ export async function deleteExport(exportId: string) {
     .delete(`export/${exportId}/video`)
     .catch((err) => console.warn(err));
 }
+
+export async function hasExport(exportId: string) {
+  const { DATA: data } = getRequestContext().env;
+  const response = await data.head(`export/${exportId}/video`);
+  return !!response;
+}
