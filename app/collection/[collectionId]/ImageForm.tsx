@@ -15,16 +15,14 @@ export default function ImageForm({ collectionId }: { collectionId: string }) {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        アップロードしたい画像をドラッグアンドドロップするか
         <button
           type="button"
           className="btn-primary mx-1"
           onClick={() => fileRef.current?.click()}
           disabled={busy}
         >
-          ファイルを選択
+          画像ファイルを追加する
         </button>
-        してください。
       </div>
       <input
         ref={fileRef}
