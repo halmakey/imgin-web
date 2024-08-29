@@ -37,36 +37,37 @@ export default function ImageForm({ collectionId }: { collectionId: string }) {
           }
           mutate(async () => {
             try {
-              for (let index = 0; index < files.length; index++) {
-                const file = files[index];
-                const image = await resizeImage(file, IMAGE_SIZE);
-                if (!image) {
-                  continue;
-                }
-                const data = new FormData();
-                data.append("data", image.blob);
-                const { imageId } = await addImage(
-                  {
-                    collectionId,
-                    index: images.length + index,
-                    width: image.width,
-                    height: image.height,
-                  },
-                  data,
-                );
-                if (image) {
-                  setImages((prev) => [
-                    ...prev,
+              await Promise.all(
+                Array.from(files).map(async (file, index) => {
+                  const image = await resizeImage(file, IMAGE_SIZE);
+                  if (!image) {
+                    return;
+                  }
+                  const data = new FormData();
+                  data.append("data", image.blob);
+                  const { imageId } = await addImage(
                     {
-                      id: imageId,
-                      blob: image.blob,
-                      url: URL.createObjectURL(image.blob),
+                      collectionId,
+                      index: images.length + index,
                       width: image.width,
                       height: image.height,
                     },
-                  ]);
-                }
-              }
+                    data,
+                  );
+                  if (image) {
+                    setImages((prev) => [
+                      ...prev,
+                      {
+                        id: imageId,
+                        blob: image.blob,
+                        url: URL.createObjectURL(image.blob),
+                        width: image.width,
+                        height: image.height,
+                      },
+                    ]);
+                  }
+                }),
+              );
             } catch (e) {
               console.error(e);
               alert("画像の読み込みに失敗しました " + String(e));
