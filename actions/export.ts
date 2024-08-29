@@ -11,3 +11,10 @@ export async function exportVideo(exportId: string, formData: FormData) {
     },
   });
 }
+
+export async function deleteExport(exportId: string) {
+  const { DATA: data } = getRequestContext().env;
+  await data
+    .delete(`export/${exportId}/video`)
+    .catch((err) => console.warn(err));
+}

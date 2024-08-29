@@ -4,6 +4,7 @@ import { getRequestContext } from "@cloudflare/next-on-pages";
 import { nanoid } from "nanoid";
 import { redirect } from "next/navigation";
 import { clearCollectionImages } from "./image";
+import { deleteExport } from "./export";
 
 export async function createCollection() {
   const db = getRequestContext().env.DB;
@@ -24,8 +25,14 @@ export async function createCollection() {
 export async function deleteCollection(collectionId: string) {
   const db = getRequestContext().env.DB;
 
+  const collection = await getCollection(collectionId);
+  if (!collection) {
+    return;
+  }
+
   await Promise.all([
     clearCollectionImages(collectionId),
+    deleteExport(collection.export_id),
     db.prepare("DELETE FROM collection WHERE id = ?").bind(collectionId).run(),
   ]);
 }
