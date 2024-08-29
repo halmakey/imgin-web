@@ -1,4 +1,4 @@
-import { Muxer, ArrayBufferTarget } from "webm-muxer";
+import { Muxer, ArrayBufferTarget } from "mp4-muxer";
 
 export async function encodeVideo(
   imageSources: string[],
@@ -9,30 +9,29 @@ export async function encodeVideo(
   const muxer = new Muxer({
     target: new ArrayBufferTarget(),
     video: {
-      codec: "V_VP9",
+      codec: "avc",
       width: size,
       height: size,
     },
+    fastStart: "in-memory",
   });
 
   const encoder = new VideoEncoder({
     output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
     error: (e) => console.error(e),
   });
-  encoder.configure({
-    codec: "vp09.00.10.08",
+  const config = {
+    codec: "avc1.640029",
     width: size,
     height: size,
-    bitrateMode: "quantizer",
+    bitrateMode: "variable",
+    bitrate: 1_000_000,
     framerate: 2,
-  });
-
-  const option = {
-    keyFrame: true,
-    vp9: {
-      quantizer: 21,
+    avc: {
+      format: "avc",
     },
-  };
+  } as const;
+  encoder.configure(config);
 
   const canvas = document.createElement("canvas");
   canvas.width = size;
@@ -53,12 +52,14 @@ export async function encodeVideo(
       timestamp: index * 500_000,
     });
 
-    encoder.encode(videoFrame, option);
+    encoder.encode(videoFrame, {
+      keyFrame: true,
+    });
     videoFrame.close();
   }
 
   await encoder.flush();
   muxer.finalize();
   onProgress(1);
-  return new Blob([muxer.target.buffer], { type: "video/webm" });
+  return new Blob([muxer.target.buffer], { type: "video/mp4" });
 }
