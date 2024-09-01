@@ -34,7 +34,7 @@ export default function ExportForm({ exportId }: { exportId: string }) {
                 width: VIDEO_SIZE,
                 height: VIDEO_SIZE,
                 framerate: 4,
-                paddingFrames: 2,
+                paddingFrames: 4,
                 onProgress: setProgress,
               });
 
