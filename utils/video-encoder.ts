@@ -1,12 +1,22 @@
 import { Muxer, ArrayBufferTarget } from "mp4-muxer";
 
-export async function encodeVideo(
-  imageSources: string[],
-  width: number,
-  height: number,
-  framerate: number,
-  onProgress: (progress: number) => void,
-) {
+const SEC = 1_000_000;
+
+export async function encodeVideo({
+  imageSources,
+  width,
+  height,
+  framerate,
+  warmUpFrames,
+  onProgress,
+}: {
+  imageSources: string[];
+  width: number;
+  height: number;
+  framerate: number;
+  warmUpFrames: number;
+  onProgress: (progress: number) => void;
+}) {
   onProgress(0);
   const muxer = new Muxer({
     target: new ArrayBufferTarget(),
@@ -39,19 +49,26 @@ export async function encodeVideo(
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
+  const frameStep = SEC / framerate;
+  const totalFrame = warmUpFrames + imageSources.length;
 
-  for (let index = 0; index < imageSources.length; index++) {
-    onProgress(index / imageSources.length);
-    const src = imageSources[index];
-    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => resolve(image);
-      image.onerror = reject;
-      image.src = src;
-    });
-    ctx.drawImage(image, 0, 0, width, height);
+  for (let index = 0; index < totalFrame; index++) {
+    onProgress(index / totalFrame);
+    if (index < warmUpFrames) {
+      ctx.fillStyle = "gray";
+      ctx.fillRect(0, 0, width, height);
+    } else {
+      const src = imageSources[index - warmUpFrames];
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = src;
+      });
+      ctx.drawImage(image, 0, 0, width, height);  
+    }
     const videoFrame = new VideoFrame(canvas, {
-      timestamp: index * (1_000_000 / framerate),
+      timestamp: frameStep * index,
     });
 
     encoder.encode(videoFrame, {

@@ -29,13 +29,14 @@ export default function ExportForm({ exportId }: { exportId: string }) {
           mutate(async () => {
             try {
               const srcs = images.map(({ url }) => url);
-              const video = await encodeVideo(
-                srcs,
-                VIDEO_SIZE,
-                VIDEO_SIZE,
-                4,
-                setProgress,
-              );
+              const video = await encodeVideo({
+                imageSources: srcs,
+                width: VIDEO_SIZE,
+                height: VIDEO_SIZE,
+                framerate: 2,
+                warmUpFrames: 4,
+                onProgress: setProgress,
+              });
 
               const json = JSON.stringify(
                 images.map(({ width, height }, index) => ({
@@ -51,6 +52,7 @@ export default function ExportForm({ exportId }: { exportId: string }) {
 
               await putExport(exportId, formData);
             } catch (err) {
+              console.error(err);
               alert("変換に失敗しました！ " + String(err));
             } finally {
               setProgress(-1);
