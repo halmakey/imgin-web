@@ -33,8 +33,8 @@ export default function ExportForm({ exportId }: { exportId: string }) {
                 imageSources: srcs,
                 width: VIDEO_SIZE,
                 height: VIDEO_SIZE,
-                framerate: 2,
-                warmUpFrames: 4,
+                framerate: 4,
+                warmUpFrames: 2,
                 onProgress: setProgress,
               });
 
