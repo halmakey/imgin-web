@@ -2,6 +2,7 @@
 
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import { nanoid } from "nanoid";
+import { revalidatePath } from "next/cache";
 
 export async function addImage(
   {
@@ -37,6 +38,10 @@ export async function addImage(
     }),
   ]);
 
+  if (index === 0) {
+    revalidatePath("/");
+  }
+
   return { imageId };
 }
 
@@ -50,6 +55,10 @@ export async function deleteImage(collectionId: string, imageId: string) {
     index = Infinity;
   }
   const updateIndexImages = otherImages.slice(index + 1);
+
+  if (index === 0) {
+    revalidatePath("/");
+  }
 
   await Promise.all([
     db.batch([

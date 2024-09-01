@@ -1,15 +1,24 @@
 "use server";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 
-export async function exportVideo(exportId: string, formData: FormData) {
-  const blob = formData.get("data") as Blob;
+export async function putExport(exportId: string, formData: FormData) {
+  const video = formData.get("video") as Blob;
+  const json = formData.get("json") as string;
 
   const { DATA: data } = getRequestContext().env;
-  await data.put(`export/${exportId}/video`, blob, {
-    httpMetadata: {
-      contentType: blob.type,
-    },
-  });
+
+  Promise.all([
+    data.put(`export/${exportId}/video`, video, {
+      httpMetadata: {
+        contentType: video.type,
+      },
+    }),
+    data.put(`export/${exportId}/json`, json, {
+      httpMetadata: {
+        contentType: "application/json",
+      },
+    }),
+  ]);
 }
 
 export async function deleteExport(exportId: string) {
