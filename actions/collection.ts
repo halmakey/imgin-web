@@ -50,8 +50,28 @@ export async function listAllCollections() {
   const db = getRequestContext().env.DB;
   const result = await db
     .prepare(
-      "SELECT id, export_id, updated_at FROM collection ORDER BY updated_at DESC",
+      `SELECT
+        c.id, 
+        c.export_id, 
+        c.updated_at,
+        ci.id as image_id
+      FROM
+        collection c
+      LEFT JOIN
+        (
+          SELECT
+            collection_id,
+            id,
+            image_index
+          FROM
+            collection_image
+          WHERE
+            image_index = 0
+        ) ci
+      ON
+        c.id = ci.collection_id
+      ORDER BY c.updated_at DESC`,
     )
-    .all<{ id: string; updated_at: number }>();
+    .all<{ id: string; updated_at: number, image_id: string }>();
   return result.results;
 }
