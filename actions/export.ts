@@ -7,7 +7,7 @@ export async function putExport(exportId: string, formData: FormData) {
 
   const { DATA: data } = getRequestContext().env;
 
-  Promise.all([
+  await Promise.all([
     data.put(`export/${exportId}/video`, video, {
       httpMetadata: {
         contentType: video.type,
