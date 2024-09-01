@@ -49,8 +49,6 @@ export async function encodeVideo({
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
-  ctx.fillStyle = "gray";
-  ctx.fillRect(0, 0, width, height);
 
   const frameStep = SEC / framerate;
   const totalFrame = paddingFrames + imageSources.length + paddingFrames;
@@ -66,6 +64,9 @@ export async function encodeVideo({
         image.src = src;
       });
       ctx.drawImage(image, 0, 0, width, height);
+    } else {
+      ctx.fillStyle = "gray";
+      ctx.fillRect(0, 0, width, height);    
     }
     const videoFrame = new VideoFrame(canvas, {
       timestamp: frameStep * index,
