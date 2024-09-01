@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import FormStateContext from "./FormStateContext";
 import { encodeVideo } from "@/utils/video-encoder";
 import { putExport, hasExport } from "@/actions/export";
@@ -34,7 +34,7 @@ export default function ExportForm({ exportId }: { exportId: string }) {
                 width: VIDEO_SIZE,
                 height: VIDEO_SIZE,
                 framerate: 4,
-                warmUpFrames: 2,
+                paddingFrames: 2,
                 onProgress: setProgress,
               });
 

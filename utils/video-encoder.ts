@@ -7,14 +7,14 @@ export async function encodeVideo({
   width,
   height,
   framerate,
-  warmUpFrames,
+  paddingFrames,
   onProgress,
 }: {
   imageSources: string[];
   width: number;
   height: number;
   framerate: number;
-  warmUpFrames: number;
+  paddingFrames: number;
   onProgress: (progress: number) => void;
 }) {
   onProgress(0);
@@ -49,23 +49,23 @@ export async function encodeVideo({
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = "gray";
+  ctx.fillRect(0, 0, width, height);
+
   const frameStep = SEC / framerate;
-  const totalFrame = warmUpFrames + imageSources.length;
+  const totalFrame = paddingFrames + imageSources.length + paddingFrames;
 
   for (let index = 0; index < totalFrame; index++) {
     onProgress(index / totalFrame);
-    if (index < warmUpFrames) {
-      ctx.fillStyle = "gray";
-      ctx.fillRect(0, 0, width, height);
-    } else {
-      const src = imageSources[index - warmUpFrames];
+    if (index >= paddingFrames && index < paddingFrames + imageSources.length) {
+      const src = imageSources[index - paddingFrames];
       const image = await new Promise<HTMLImageElement>((resolve, reject) => {
         const image = new Image();
         image.onload = () => resolve(image);
         image.onerror = reject;
         image.src = src;
       });
-      ctx.drawImage(image, 0, 0, width, height);  
+      ctx.drawImage(image, 0, 0, width, height);
     }
     const videoFrame = new VideoFrame(canvas, {
       timestamp: frameStep * index,
