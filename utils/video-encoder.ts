@@ -2,7 +2,9 @@ import { Muxer, ArrayBufferTarget } from "mp4-muxer";
 
 export async function encodeVideo(
   imageSources: string[],
-  size: number,
+  width: number,
+  height: number,
+  framerate: number,
   onProgress: (progress: number) => void,
 ) {
   onProgress(0);
@@ -10,8 +12,8 @@ export async function encodeVideo(
     target: new ArrayBufferTarget(),
     video: {
       codec: "avc",
-      width: size,
-      height: size,
+      width,
+      height,
     },
     fastStart: "in-memory",
   });
@@ -22,11 +24,11 @@ export async function encodeVideo(
   });
   const config = {
     codec: "avc1.640029",
-    width: size,
-    height: size,
+    width,
+    height,
     bitrateMode: "variable",
     bitrate: 1_000_000,
-    framerate: 2,
+    framerate,
     avc: {
       format: "avc",
     },
@@ -34,8 +36,8 @@ export async function encodeVideo(
   encoder.configure(config);
 
   const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
+  canvas.width = width;
+  canvas.height = height;
   const ctx = canvas.getContext("2d")!;
 
   for (let index = 0; index < imageSources.length; index++) {
@@ -47,9 +49,9 @@ export async function encodeVideo(
       image.onerror = reject;
       image.src = src;
     });
-    ctx.drawImage(image, 0, 0, size, size);
+    ctx.drawImage(image, 0, 0, width, height);
     const videoFrame = new VideoFrame(canvas, {
-      timestamp: index * 500_000,
+      timestamp: index * (1_000_000 / framerate),
     });
 
     encoder.encode(videoFrame, {

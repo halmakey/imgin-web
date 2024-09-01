@@ -28,7 +28,7 @@ export default function ExportForm({ exportId }: { exportId: string }) {
           mutate(async () => {
             try {
               const srcs = images.map(({ url }) => url);
-              const result = await encodeVideo(srcs, VIDEO_SIZE, setProgress);
+              const result = await encodeVideo(srcs, VIDEO_SIZE, VIDEO_SIZE, 4, setProgress);
 
               const formData = new FormData();
               formData.append("data", result);
