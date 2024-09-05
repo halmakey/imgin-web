@@ -1,6 +1,25 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`c3`](https://developers.cloudflare.com/pages/get-started/c3).
+# imgin-web
+
+## 概要
+
+ImginはVRChatのワールド上で任意の画像を展示することができるクライアントサーバシステムです。
+
+Imginは次のリポジトリで構成されます。
+
+* [imgin-web](https://github.com/halmakey/imgin-web) - ウェブ上で展示する画像をアップロードしてVRChat向けに配信する
+* [imgin-vrc](https://github.com/halmakey/imgin-vrc) - ウェブから配信された画像をVRChatのワールドに展開する
+
+## 動作環境
+
+* Mac / Windows (WSL2)
+* Node.js 20
+* Cloudflare Pages
+* Cloudflare D1
+* Cloudflare R2
 
 ## セットアップ
+
+Wikiを参照
 
 1. `npm install` で依存パッケージをインストール (Windowsの場合はWSL上で実行)
 2. `npx wrangler login` でCloudflareにログイン
