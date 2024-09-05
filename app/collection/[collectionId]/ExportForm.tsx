@@ -8,7 +8,7 @@ import ExportUrl from "./ExportUrl";
 import useSWR from "swr";
 import { DocumentTextIcon, FilmIcon } from "@heroicons/react/24/outline";
 
-const VIDEO_SIZE = 1280;
+const VIDEO_SIZE = 2048;
 
 export default function ExportForm({ exportId }: { exportId: string }) {
   const { busy, images, mutate } = useContext(FormStateContext);
@@ -33,7 +33,7 @@ export default function ExportForm({ exportId }: { exportId: string }) {
                 imageSources: srcs,
                 width: VIDEO_SIZE,
                 height: VIDEO_SIZE,
-                framerate: 4,
+                framerate: 2,
                 paddingFrames: 4,
                 onProgress: setProgress,
               });
