@@ -33,7 +33,7 @@ export async function encodeVideo({
     error: (e) => console.error(e),
   });
   const config = {
-    codec: "avc1.640029",
+    codec: "avc1.640032",
     width,
     height,
     bitrateMode: "variable",
