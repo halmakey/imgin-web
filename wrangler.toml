@@ -11,4 +11,4 @@ bucket_name = 'imgin-data'
 [[d1_databases]]
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "imgin-db"
-database_id = "bc63c673-4a18-4f85-8c25-db81c34e9ce0"
+database_id = "63f56a4c-befb-4b93-9512-a3030c04a96b"
