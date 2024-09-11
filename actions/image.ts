@@ -110,3 +110,40 @@ export async function listImagesForCollection(collectionId: string) {
     }>();
   return result.results;
 }
+
+export async function moveImage(
+  collectionId: string,
+  imageId: string,
+  destination: number,
+) {
+  const db = getRequestContext().env.DB;
+  const images = await listImagesForCollection(collectionId);
+  const fromIndex = images.findIndex((image) => image.id === imageId);
+  const toIndex = Math.max(0, Math.min(destination, images.length - 1));
+  if (fromIndex === -1) {
+    return images;
+  }
+  const targetImage = images.splice(fromIndex, 1);
+  images.splice(toIndex, 0, ...targetImage);
+
+  const minIndex = Math.min(fromIndex, toIndex);
+  const maxIndex = Math.max(fromIndex, toIndex) + 1;
+
+  const statements: D1PreparedStatement[] = [];
+  for (let i = minIndex; i < maxIndex; i++) {
+    images[i].image_index = i;
+    statements.push(
+      db
+        .prepare("UPDATE collection_image SET image_index = ? WHERE id = ?")
+        .bind(images[i].image_index, images[i].id),
+    );
+  }
+
+  if (statements.length === 0) {
+    return images;
+  }
+
+  await db.batch(statements);
+
+  return images;
+}

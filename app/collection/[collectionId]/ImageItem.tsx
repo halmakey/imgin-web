@@ -1,4 +1,5 @@
 import { TrashIcon } from "@heroicons/react/24/solid";
+import { DragEvent, useCallback } from "react";
 
 const PREVIEW_SIZE = 198;
 
@@ -9,6 +10,9 @@ export default function ImageItem({
   height,
   url,
   onDelete,
+  onDragStart,
+  onDragOver,
+  onDrop,
 }: {
   id: string;
   index: number;
@@ -16,10 +20,14 @@ export default function ImageItem({
   height: number;
   url: string;
   onDelete: () => void;
+  onDragStart?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDrop?: (e: React.DragEvent<HTMLDivElement>) => void;
 }) {
   const scale = Math.min(PREVIEW_SIZE / width, PREVIEW_SIZE / height);
   return (
     <div
+      id={id}
       key={id}
       className="relative flex items-center justify-center bg-gray-900"
       style={{
@@ -28,6 +36,9 @@ export default function ImageItem({
       }}
       tabIndex={1}
       draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
     >
       {url && (
         <img
