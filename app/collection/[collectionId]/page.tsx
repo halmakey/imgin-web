@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { listImagesForCollection } from "@/actions/image";
 import ExportForm from "./ExportForm";
 import { FormStateProvider } from "./FormStateContext";
+import { getCollectionImageUrl } from "@/utils/image-url";
 
 export const runtime = "edge";
 
@@ -26,7 +27,7 @@ export default async function Home({
         <FormStateProvider
           initialImages={images.map(({ id, width, height }) => ({
             id,
-            url: `/collection/${collectionId}/image/${id}`,
+            url: getCollectionImageUrl(collectionId, id),
             width,
             height,
           }))}

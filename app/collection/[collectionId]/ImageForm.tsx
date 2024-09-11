@@ -1,16 +1,65 @@
 "use client";
 
-import { addImage, deleteImage } from "@/actions/image";
+import { addImage, deleteImage, moveImage } from "@/actions/image";
 import { resizeImage } from "@/utils/image-resizer";
-import { useContext, useRef } from "react";
+import { DragEvent, useCallback, useContext, useRef } from "react";
 import ImageItem from "./ImageItem";
 import FormStateContext from "./FormStateContext";
+import { getCollectionImageUrl } from "@/utils/image-url";
 
 const IMAGE_SIZE = 1920;
 
 export default function ImageForm({ collectionId }: { collectionId: string }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const { images, setImages, busy, mutate } = useContext(FormStateContext);
+
+  const handleSubmissionDragStart = useCallback(
+    (e: DragEvent<HTMLDivElement>) => {
+      const id = e.currentTarget.id;
+      if (!id) {
+        return;
+      }
+      e.dataTransfer.setData("text/plain", id);
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.dropEffect = "move";
+    },
+    [],
+  );
+
+  const handleSubmissionDragOver = useCallback(
+    (e: DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+    },
+    [],
+  );
+
+  const handleSubmissionDrop = useCallback(
+    (e: DragEvent<HTMLDivElement>) => {
+      const fromId = e.dataTransfer.getData("text/plain");
+      const toId = e.currentTarget.id;
+      const fromIndex = images.findIndex((image) => image.id === fromId);
+      const toIndex = images.findIndex((image) => image.id === toId);
+
+      if (fromIndex === -1 || toIndex === -1) {
+        return;
+      }
+      mutate(async () => {
+        try {
+          const images = await moveImage(collectionId, fromId, toIndex);
+          setImages(
+            images.map((image) => ({
+              ...image,
+              url: getCollectionImageUrl(collectionId, image.id),
+            })),
+          );
+        } catch (err) {
+          alert("移動に失敗しました！ " + String(err));
+          window.location.reload();
+        }
+      });
+    },
+    [collectionId, images, mutate, setImages],
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -95,6 +144,9 @@ export default function ImageForm({ collectionId }: { collectionId: string }) {
                 }
               })
             }
+            onDragStart={handleSubmissionDragStart}
+            onDragOver={handleSubmissionDragOver}
+            onDrop={handleSubmissionDrop}
           />
         ))}
       </div>
