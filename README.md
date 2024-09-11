@@ -17,6 +17,12 @@ Imginは次のリポジトリで構成されます。
 * Cloudflare D1
 * Cloudflare R2
 
+## ご注意
+
+本リポジトリはハッカソンで制作して発表した成果物です。
+今後、機能拡張等を行う予定はありません。
+実際の運用にあたってはCloudflare Access等で認証機能をつけるようにしてください。
+
 ## セットアップと使い方
 
 [Wiki](https://github.com/halmakey/imgin-web/wiki) を参照してください
