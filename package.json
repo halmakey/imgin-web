@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "pages:build": "bunx @cloudflare/next-on-pages",
-    "preview": "bun pages:build && wrangler pages dev",
-    "deploy": "bun pages:build && wrangler pages deploy",
+    "pages:build": "$npm_execpath exec @cloudflare/next-on-pages",
+    "preview": "$npm_execpath run pages:build && wrangler pages dev",
+    "deploy": "$npm_execpath run pages:build && wrangler pages deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
     "migrate:local": "wrangler d1 migrations apply imgin-db --local",
     "migrate:remote": "wrangler d1 migrations apply imgin-db --remote"
