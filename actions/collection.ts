@@ -2,7 +2,6 @@
 
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import { nanoid } from "nanoid";
-import { redirect } from "next/navigation";
 import { clearCollectionImages } from "./image";
 import { deleteExport } from "./export";
 
@@ -19,7 +18,8 @@ export async function createCollection() {
     .bind(id, exportId, now, now)
     .run();
 
-  redirect(`/collection/${id}`);
+  // Not redirect(): on next-on-pages with Next >=15.5.21 it fails with "Missing initURL".
+  return id;
 }
 
 export async function deleteCollection(collectionId: string) {
