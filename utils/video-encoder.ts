@@ -70,6 +70,7 @@ export async function encodeVideo({
     }
     const videoFrame = new VideoFrame(canvas, {
       timestamp: frameStep * index,
+      duration: frameStep,
     });
 
     encoder.encode(videoFrame, {

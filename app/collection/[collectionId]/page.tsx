@@ -9,10 +9,11 @@ import { getCollectionImageUrl } from "@/utils/image-url";
 export const runtime = "edge";
 
 export default async function Home({
-  params: { collectionId },
+  params,
 }: {
-  params: { collectionId: string };
+  params: Promise<{ collectionId: string }>;
 }) {
+  const { collectionId } = await params;
   const [collection, images] = await Promise.all([
     getCollection(collectionId),
     listImagesForCollection(collectionId),
