@@ -32,17 +32,20 @@ export async function encodeVideo({
     output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
     error: (e) => console.error(e),
   });
-  const config = {
+  const base = {
     codec: "avc1.640032",
     width,
     height,
-    bitrateMode: "variable",
-    bitrate: 1_000_000,
     framerate,
     avc: {
       format: "avc",
     },
   } as const;
+  const quality = { ...base, bitrateMode: "quantizer" } as const;
+  const useQuantizer = (await VideoEncoder.isConfigSupported(quality)).supported;
+  const config = useQuantizer
+    ? quality
+    : ({ ...base, bitrateMode: "variable", bitrate: 3_000_000 } as const);
   encoder.configure(config);
 
   const canvas = document.createElement("canvas");
@@ -75,6 +78,7 @@ export async function encodeVideo({
 
     encoder.encode(videoFrame, {
       keyFrame: true,
+      ...(useQuantizer && { avc: { quantizer: 25 } }),
     });
     videoFrame.close();
   }
