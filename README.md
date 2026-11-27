@@ -12,7 +12,7 @@ Imginは次のリポジトリで構成されます。
 ## 動作環境
 
 * Mac / Windows (WSL2)
-* Node.js 20
+* Node.js 26
 * Cloudflare Pages
 * Cloudflare D1
 * Cloudflare R2
