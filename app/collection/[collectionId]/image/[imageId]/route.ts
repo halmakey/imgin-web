@@ -5,10 +5,9 @@ export const runtime = "edge";
 
 export async function GET(
   req: NextRequest,
-  {
-    params: { collectionId, imageId },
-  }: { params: { collectionId: string; imageId: string } },
+  { params }: { params: Promise<{ collectionId: string; imageId: string }> },
 ) {
+  const { collectionId, imageId } = await params;
   const data = getRequestContext().env.DATA;
   try {
     const etag =
